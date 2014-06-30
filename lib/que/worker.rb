@@ -70,6 +70,8 @@ module Que
     end
 
     def work_loop
+      sleep 2
+
       loop do
         time   = Time.now
         cycle  = nil
