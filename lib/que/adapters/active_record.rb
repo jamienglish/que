@@ -27,7 +27,15 @@ module Que
       private
 
       def checkout_activerecord_adapter(&block)
-        ::ActiveRecord::Base.connection_pool.with_connection(&block)
+        Timeout.timeout(1) do
+          begin
+            ::ActiveRecord::Base.connection_pool.with_connection(&block)
+          rescue ::ActiveRecord::ConnectionNotEstablished => e
+            puts "couldn't connect to db, retrying..."
+            sleep 0.1
+            retry
+          end
+        end
       end
     end
   end
